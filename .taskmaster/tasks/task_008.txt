@@ -1,0 +1,11 @@
+# Task ID: 8
+# Title: Implement User-Specific API Endpoints
+# Status: done
+# Dependencies: 7
+# Priority: medium
+# Description: Create API endpoints for individual user loyalty card operations
+# Details:
+Implement POST /create-pass/:userId for loyalty card creation. Create GET /save-url/:userId for Save to Wallet link generation. Add GET /card-status/:userId for checking user's card save status. Include proper parameter validation and user ID handling.
+
+# Test Strategy:
+Test card creation for multiple users, verify Save to Wallet URL generation, validate card status checking functionality

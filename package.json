@@ -1,0 +1,47 @@
+{
+  "name": "android-poc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest test/unit",
+    "test:integration": "jest test/integration",
+    "test:verbose": "jest --verbose",
+    "import:cards": "node scripts/import-existing-cards.js",
+    "tm": "task-master",
+    "tm:init": "task-master init",
+    "tm:list": "task-master list",
+    "tm:add": "task-master add",
+    "tm:start": "task-master start",
+    "tm:complete": "task-master complete",
+    "tm:generate": "task-master generate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "express-validator": "^7.2.1",
+    "google-auth-library": "^10.3.1",
+    "googleapis": "^160.0.0",
+    "helmet": "^8.1.0",
+    "joi": "^18.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "task-master-ai": "^0.27.3",
+    "xss": "^1.0.15"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}

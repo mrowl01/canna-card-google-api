@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Initialize Node.js Project and Install Dependencies
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Set up the Node.js project structure and install all required npm packages for Google Wallet integration
+# Details:
+Create package.json with Express.js server setup. Install required packages: express, googleapis, google-auth-library, jsonwebtoken, dotenv. Initialize basic project structure with src/, config/, and test/ directories. Set up npm scripts for development and production.
+
+# Test Strategy:
+Verify all packages install correctly, test basic Express server startup, validate package.json configuration

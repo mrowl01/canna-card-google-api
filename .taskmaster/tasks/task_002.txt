@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Configure Environment Variables and Google Cloud Setup
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Set up environment configuration and Google Cloud project with service account credentials
+# Details:
+Create .env file with GOOGLE_APPLICATION_CREDENTIALS, ISSUER_ID, CLASS_SUFFIX, OBJECT_SUFFIX variables. Set up Google Cloud project, enable Google Wallet API, create service account with Wallet Objects Admin role. Download service account JSON credentials and configure secure storage.
+
+# Test Strategy:
+Validate environment variables load correctly, test Google Cloud authentication, verify service account permissions

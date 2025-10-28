@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Implement Core API Endpoints - Health and Class Management
+# Status: done
+# Dependencies: 6
+# Priority: medium
+# Description: Create health check endpoint and loyalty class creation API
+# Details:
+Implement GET /health endpoint returning server status. Create POST /create-class endpoint accepting program name, logo URL, and colors. Return class ID and status. Include proper request validation and error handling.
+
+# Test Strategy:
+Test health endpoint availability, validate class creation API with various parameters, verify error handling for invalid inputs

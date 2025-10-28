@@ -1,0 +1,11 @@
+# Task ID: 9
+# Title: Build Points Management System
+# Status: done
+# Dependencies: 8
+# Priority: medium
+# Description: Implement points tracking, updates, and transaction history management
+# Details:
+Create POST /update-points/:userId endpoint for points balance updates. Implement points delta calculation (positive/negative). Maintain transaction history tracking. Update Google Wallet object in real-time with new balance. Include validation for point operations.
+
+# Test Strategy:
+Test points addition and subtraction, verify real-time wallet updates, validate transaction history tracking
