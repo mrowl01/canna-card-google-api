@@ -32,7 +32,9 @@ class LoyaltyObjectService {
       barcode,
       template,
       label_4_value,
-      label_5_value
+      label_5_value,
+      primaryButton,
+      links
     } = options;
 
     const objectId = this.generateObjectId(userId);
@@ -41,11 +43,6 @@ class LoyaltyObjectService {
 
     // Prepare text modules - MUST include card front fields with these IDs
     const textModulesData = [
-      {
-        header: 'Name',
-        body: memberName,
-        id: 'card_name'
-      },
       {
         header: 'Points',
         body: points.toString(),
@@ -73,7 +70,8 @@ class LoyaltyObjectService {
       }
     ];
 
-    return {
+    // Build the loyalty object definition
+    const loyaltyObject = {
       id: objectId,
       classId: classId,
       state: state,
@@ -107,6 +105,38 @@ class LoyaltyObjectService {
       smartTapRedemptionValue: points.toString(),
       enableSmartTap: true
     };
+
+    // Add linksModuleData only if links are provided
+    if (links && Array.isArray(links) && links.length > 0) {
+      loyaltyObject.linksModuleData = {
+        uris: links.map((link, index) => ({
+          uri: link.url,
+          description: link.label,
+          id: `link_${index}`
+        }))
+      };
+    }
+
+    // Add appLinkData only if primaryButton is provided
+    if (primaryButton && primaryButton.label && primaryButton.url) {
+      loyaltyObject.appLinkData = {
+        displayText: {
+          defaultValue: {
+            language: 'en-US',
+            value: primaryButton.label
+          }
+        },
+        webAppLinkInfo: {
+          appTarget: {
+            targetUri: {
+              uri: primaryButton.url
+            }
+          }
+        }
+      };
+    }
+
+    return loyaltyObject;
   }
 
   // Get tier benefits description

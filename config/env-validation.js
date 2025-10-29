@@ -14,7 +14,7 @@ function validateEnvironment() {
 
   // Add environment-specific required vars
   if (!isVercel) {
-    requiredEnvVars.push('GOOGLE_APPLICATION_CREDENTIALS', 'ORIGINS', 'PORT');
+    requiredEnvVars.push('ORIGINS', 'PORT');
   }
 
   const missing = [];
@@ -27,12 +27,15 @@ function validateEnvironment() {
     }
   });
 
-  // Validate Google credentials (file-based for local, JSON for Vercel)
-  if (isVercel) {
-    // On Vercel, check for GOOGLE_SERVICE_ACCOUNT_JSON
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-      missing.push('GOOGLE_SERVICE_ACCOUNT_JSON');
-    } else {
+  // Validate Google credentials (support both JSON env var and file path)
+  const hasJsonCredentials = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+  const hasFileCredentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+  if (!hasJsonCredentials && !hasFileCredentials) {
+    missing.push('GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_APPLICATION_CREDENTIALS');
+  } else {
+    // Validate GOOGLE_SERVICE_ACCOUNT_JSON if present
+    if (hasJsonCredentials) {
       try {
         const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
         if (!credentials.type || credentials.type !== 'service_account') {
@@ -42,9 +45,9 @@ function validateEnvironment() {
         invalid.push(`GOOGLE_SERVICE_ACCOUNT_JSON: Invalid JSON - ${error.message}`);
       }
     }
-  } else {
-    // Local development - check for file-based credentials
-    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+
+    // Validate GOOGLE_APPLICATION_CREDENTIALS if present (only check if no JSON credentials)
+    if (!hasJsonCredentials && hasFileCredentials) {
       const credentialsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
       if (!fs.existsSync(credentialsPath)) {
         invalid.push(`GOOGLE_APPLICATION_CREDENTIALS: File not found at ${credentialsPath}`);

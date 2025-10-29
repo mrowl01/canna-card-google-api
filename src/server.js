@@ -247,6 +247,59 @@ app.post('/create-class', async (req, res) => {
         localizedLabel: {
           defaultValue: { language: 'en-US', value: 'Points' }
         }
+      },
+      classTemplateInfo: {
+        cardTemplateOverride: {
+          cardRowTemplateInfos: [
+            {
+              twoItems: {
+                startItem: {
+                  firstValue: {
+                    fields: [{
+                      fieldPath: "object.accountName"
+                    }]
+                  }
+                },
+                endItem: {
+                  firstValue: {
+                    fields: [{
+                      fieldPath: "object.textModulesData['card_tier']"
+                    }]
+                  }
+                }
+              }
+            },
+            {
+              twoItems: {
+                startItem: {
+                  firstValue: {
+                    fields: [{
+                      fieldPath: "object.textModulesData['card_points']"
+                    }]
+                  }
+                },
+                endItem: {
+                  firstValue: {
+                    fields: [{
+                      fieldPath: "object.textModulesData['card_next_reward']"
+                    }]
+                  }
+                }
+              }
+            },
+            {
+              oneItem: {
+                item: {
+                  firstValue: {
+                    fields: [{
+                      fieldPath: "object.linksModuleData.uris[0]"
+                    }]
+                  }
+                }
+              }
+            }
+          ]
+        }
       }
     };
 
@@ -367,7 +420,9 @@ app.post('/create-card', async (req, res) => {
       barcodeValue,
       validFrom,
       validUntil,
-      accountId
+      accountId,
+      primaryButton,
+      links
     } = req.body;
 
     // Validation
@@ -406,68 +461,35 @@ app.post('/create-card', async (req, res) => {
       else calculatedTier = 'Bronze';
     }
 
-    // Build loyalty object
-    const loyaltyObject = {
-      id: objectId,
+    // Build barcode configuration
+    const barcodeConfig = {
+      type: barcodeType,
+      value: barcodeValue || `MEMBER_${userId}`
+    };
+
+    // Create loyalty object using the service (includes all text modules)
+    const createOptions = {
       classId: classId,
-      state: 'ACTIVE',
-      accountId: accountId || userId,
-      accountName: memberName,
-      loyaltyPoints: {
-        balance: {
-          string: String(points)
-        }
-      },
-      barcode: {
-        type: barcodeType,
-        value: barcodeValue || `MEMBER_${userId}`,
-        alternateText: userId
-      }
+      points: points,
+      tier: calculatedTier,
+      memberName: memberName,
+      barcode: barcodeConfig,
+      primaryButton: primaryButton,
+      links: links
     };
 
-    // Add tier
-    loyaltyObject.secondaryLoyaltyPoints = {
-      label: 'Tier',
-      localizedLabel: {
-        defaultValue: { language: 'en-US', value: 'Tier' }
-      },
-      balance: {
-        string: calculatedTier
-      }
-    };
+    const result = await loyaltyObjectService.createObject(userId, createOptions);
 
-    // Add validity dates if provided
-    if (validFrom || validUntil) {
-      loyaltyObject.validTimeInterval = {};
-      if (validFrom) {
-        loyaltyObject.validTimeInterval.start = { date: validFrom };
-      }
-      if (validUntil) {
-        loyaltyObject.validTimeInterval.end = { date: validUntil };
-      }
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        error: result.error,
+        message: result.message
+      });
     }
 
-    // Create object in Google Wallet
-    // Call Google Wallet API directly instead of using createObject
-    const googleWalletAuth = require('./auth/google-wallet-auth');
-    const retry = require('./utils/retry');
-
-    const result = await retry.retryGoogleApi(
-      async () => {
-        const client = await googleWalletAuth.getClient();
-        return await client.loyaltyobject.insert({
-          requestBody: loyaltyObject
-        });
-      },
-      {
-        operation: 'createLoyaltyObject',
-        objectId: objectId,
-        userId: userId
-      }
-    );
-
     // Generate Save to Wallet URL
-    const saveUrlResult = jwtService.generateSaveToWalletURL(loyaltyObject);
+    const saveUrlResult = jwtService.generateSaveToWalletURL(result.data);
 
     res.status(201).json({
       success: true,
